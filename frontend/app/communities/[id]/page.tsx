@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useUser } from "@clerk/nextjs";
 
 type Community = {
   _id: string;
@@ -26,6 +27,15 @@ type Community = {
   members: number;
   events: Event[];
 };
+type Message = {
+  _id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  text: string;
+  createdAt: string;
+};
+
 
 type Event = {
   _id: string;
@@ -36,12 +46,17 @@ type Event = {
 };
 
 export default function CommunityPage() {
-  const { id } = useParams();
+  const { id } = useParams(); // ⚠️ `id` could be undefined
+  const { user } = useUser(); // ✅ Get user from Clerk
   const [community, setCommunity] = useState<Community | null>(null);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventDescription, setNewEventDescription] = useState("");
   const [newEventDate, setNewEventDate] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+const [newMessage, setNewMessage] = useState("");
+const [loadingMessages, setLoadingMessages] = useState(true);
+
 
   useEffect(() => {
     fetch(`/api/communities/${id}`)
@@ -49,6 +64,39 @@ export default function CommunityPage() {
       .then((data) => setCommunity(data))
       .catch((err) => console.error("Error fetching community:", err));
   }, [id]);
+
+  useEffect(() => {
+    fetch(`/api/communities/${id}/messages`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages(data);
+        setLoadingMessages(false);
+      })
+      .catch((err) => console.error("Error fetching messages:", err));
+  }, [id]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !id || !user) return;
+
+    const res = await fetch(`/api/communities/${id}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user.id, // ✅ Use actual Clerk user ID
+        userName: user.fullName || "Anonymous",
+        userAvatar: user.imageUrl || "/avatar.jpg",
+        text: newMessage,
+      }),
+    });
+
+    if (res.ok) {
+      const message = await res.json();
+      setMessages((prev) => [...prev, message]);
+      setNewMessage("");
+    }
+  };
+  
+  
 
   const handleCreateEvent = async () => {
     if (community && newEventTitle && newEventDescription && newEventDate) {
@@ -182,43 +230,42 @@ export default function CommunityPage() {
 
         {/* Forum Tab */}
         <TabsContent value="forum">
-          <ScrollArea className="h-[600px] space-y-4 p-4 border rounded-lg">
-            {[1, 2].map((index) => (
-              <Card key={index} className="shadow-md rounded-lg border">
-                <CardHeader>
-                  <div className="flex items-center">
-                    <Avatar className="h-6 w-6 mr-2">
-                      <AvatarImage
-                        src="/placeholder.svg?height=32&width=32"
-                        alt="@user"
-                      />
-                      <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
-                    <CardTitle className="text-sm">
-                      {index === 1 ? "How to start meditation?" : "Best stress relief techniques?"}
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">
-                    {index === 1
-                      ? "I'm new to meditation. Any tips for beginners?"
-                      : "What are some effective stress relief techniques you've tried?"}
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline">Reply</Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </ScrollArea>
+  {/* Chat Messages */}
+  <ScrollArea className="h-[500px] space-y-4 p-4 border rounded-lg">
+        {loadingMessages ? (
+          <p className="text-center text-gray-500">Loading messages...</p>
+        ) : (
+          messages.map((msg) => (
+            <Card key={msg._id} className="mb-4">
+              <CardHeader>
+                <div className="flex items-center">
+                  <Avatar className="h-6 w-6 mr-2">
+                    <AvatarImage src={msg.userAvatar || "/placeholder.svg"} alt={msg.userName} />
+                    <AvatarFallback>{msg.userName[0]}</AvatarFallback>
+                  </Avatar>
+                  <CardTitle className="text-sm">{msg.userName}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">{msg.text}</p>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </ScrollArea>
 
-          {/* New Post */}
-          <div className="mt-4 space-y-2">
-            <Textarea placeholder="Ask a question or start a discussion..." />
-            <Button className="w-full">Post</Button>
-          </div>
-        </TabsContent>
+  {/* New Message Input */}
+  <div className="mt-4 space-y-2">
+    <Textarea
+      placeholder="Type a message..."
+      value={newMessage}
+      onChange={(e) => setNewMessage(e.target.value)}
+      onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+    />
+    <Button className="w-full" onClick={handleSendMessage}>Send</Button>
+  </div>
+</TabsContent>
+
       </Tabs>
     </div>
   );
