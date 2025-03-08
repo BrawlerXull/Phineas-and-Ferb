@@ -1,37 +1,60 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import useChat from "@/hooks/useChat"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useQuestionnaire } from "@/hooks/useQuestionnaire"
-
-
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Mic, MicOff } from "lucide-react"; 
+import useChat from "@/hooks/useChat";
 
 export default function Chatbot() {
-  const { messages, input, setInput, error, handleSend } = useChat([
-    { role: 'bot', content: 'Hello! I\'m your MindAI your mental health assistant. How can I help you today?' },
+  const { messages, input, setInput, loading, error, handleSend } = useChat([
+    { role: 'bot', content: 'Hello! I\'m your MindAI, your mental health assistant. How can I help you today?' },
   ]);
 
-  const {
-    questions,
-    options,
-    answers,
-    currentQuestion,
-    response,
-    loading,
-    handleAnswer,
-    handleSubmit,
-    setCurrentQuestion,
-  } = useQuestionnaire();
+  const [isListening, setIsListening] = useState(false);
+  
+  let recognition: SpeechRecognition | null = null;
+  if (typeof window !== "undefined") {
+    recognition = new ((window as Window & typeof globalThis).SpeechRecognition || (window as Window & typeof globalThis).webkitSpeechRecognition)();
+  }
 
+  if (recognition) {
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    // Fix type of `event` here
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setInput((prev) => `${prev} ${transcript}`);
+    };
+  }
+
+  const handleMicClick = () => {
+    if (isListening) {
+      recognition?.stop();
+    } else {
+      recognition?.start();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSend();
+  };
 
   return (
-    <div>
-      <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>MindAI Health Assistant</CardTitle>
         <CardDescription>Chat with our AI for support and guidance</CardDescription>
@@ -51,7 +74,6 @@ export default function Chatbot() {
               <div className="w-3 h-3 rounded-full animate-bounce bg-gray-600"></div>
               <div className="w-4 h-4 rounded-full animate-bounce bg-gray-600"></div>
             </div>
-          
           )}
           {error && (
             <div className="flex justify-start mb-4">
@@ -63,62 +85,23 @@ export default function Chatbot() {
         </ScrollArea>
       </CardContent>
       <CardFooter>
-        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex w-full space-x-2">
+        <form onSubmit={handleSubmit} className="flex w-full space-x-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message here..."
           />
           <Button type="submit" disabled={loading}>Send</Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleMicClick}
+            className={`p-2 ${isListening ? "text-red-500" : ""}`}
+          >
+            {isListening ? <MicOff /> : <Mic />}
+          </Button>
         </form>
       </CardFooter>
     </Card>
-        <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Mental Health Questionnaire</CardTitle>
-          <CardDescription>Please answer the following questions about your mental health over the past two weeks</CardDescription>
-        </CardHeader>
-  
-        <CardContent>
-          {response ? (
-            <div className="text-center">
-              <h2 className="text-lg font-semibold mb-4">Thank you for completing the questionnaire</h2>
-              <p>{response}</p>
-            </div>
-          ) : (
-            currentQuestion < questions.length && (
-              <div key={questions[currentQuestion].id}>
-                <h2 className="text-lg font-semibold mb-4">{questions[currentQuestion].text}</h2>
-                <RadioGroup onValueChange={handleAnswer} value={answers[questions[currentQuestion].id]}>
-                  {options.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={`q${questions[currentQuestion].id}-${option.value}`} />
-                      <Label htmlFor={`q${questions[currentQuestion].id}-${option.value}`}>{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-            )
-          )}
-        </CardContent>
-  
-        <CardFooter className="flex justify-between">
-          {currentQuestion > 0 && !response && (
-            <Button onClick={() => setCurrentQuestion(prev => prev - 1)}>Previous</Button>
-          )}
-          {currentQuestion < questions.length - 1 && !response ? (
-            <Button onClick={() => setCurrentQuestion(prev => prev + 1)} disabled={!answers[questions[currentQuestion].id]}>
-              Next
-            </Button>
-          ) : null}
-  
-          {!response && (
-            <Button onClick={handleSubmit} disabled={Object.keys(answers).length !== questions.length || loading}>
-              {loading ? "Submitting..." : "Submit"}
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
-    </div>
   );
 }
