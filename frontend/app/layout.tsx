@@ -46,7 +46,7 @@ export default function RootLayout({
                     <div className="flex gap-6 md:gap-10">
                       <Link href="/" className="flex items-center space-x-2">
                         <Image src="/logo.png" width={50} height={50} alt="Eunoia Vault Logo"  />
-                        <span className="inline-block font-bold text-xl">Eunoia Vault</span>
+                        <span className="inline-block font-bold text-xl">प्रगती AI</span>
                       </Link>
                       <nav className="flex gap-6">
                         <Link href="/" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/') ? 'border-b-2 border-primary' : ''}`}>
