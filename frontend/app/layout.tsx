@@ -52,18 +52,18 @@ export default function RootLayout({
                         <Link href="/" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/') ? 'border-b-2 border-primary' : ''}`}>
                           Home
                         </Link>
-                        {/* <Link href="/input" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
-                          Check-In
-                        </Link> */}
+                        <Link href="/public-speaking" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
+                          Public Speaking
+                        </Link>
                          <Link href="/journal" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
                           Journal
                         </Link>
                         <Link href="/chatbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chatbot') ? 'border-b-2 border-primary' : ''}`}>
                           AI Chat
                         </Link> 
-                        <Link href="/chainbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chainbot') ? 'border-b-2 border-primary' : ''}`}>
+                        {/* <Link href="/chainbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chainbot') ? 'border-b-2 border-primary' : ''}`}>
                           Chainbot
-                        </Link>
+                        </Link> */}
                         {/* <Link href="/calendar" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/calendar') ? 'border-b-2 border-primary' : ''}`}>
                           Calendar
                         </Link> */}
@@ -73,9 +73,9 @@ export default function RootLayout({
                         <Link href="/stake" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/stake') ? 'border-b-2 border-primary' : ''}`}>
                           Stake
                         </Link>
-                        <Link href="/fitbit" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
+                        {/* <Link href="/fitbit" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
                           Fitbit
-                        </Link>
+                        </Link> */}
                         <Link href="/leaderboard" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
                           Leaderboard
                         </Link>
@@ -94,9 +94,9 @@ export default function RootLayout({
                         {/* <Link href="/rewards" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/helpline') ? 'border-b-2 border-primary' : ''}`}>
                           Rewards
                         </Link> */}
-                        <Link href="/helpline" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/helpline') ? 'border-b-2 border-primary' : ''}`}>
+                        {/* <Link href="/helpline" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/helpline') ? 'border-b-2 border-primary' : ''}`}>
                           Helpline
-                        </Link>
+                        </Link> */}
                       </nav>
                     </div>
                     <div className="flex flex-1 items-center justify-end space-x-4 px-1">

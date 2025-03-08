@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import nodemailer from 'nodemailer';
+import FamilyMemberModel from '@/models/FamilyMember';  // Ensure this is your actual model path
 
 interface ChatRequest {
   message: string;
+  userId: string; // Assuming userId is passed to identify the user
 }
 
 export async function POST(req: Request) {
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
     return new NextResponse('GEMINI_API_KEY is missing', { status: 500 });
   }
 
-  const { message }: ChatRequest = await req.json();
+  const { message, userId }: ChatRequest = await req.json();
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const safetySettings = [
@@ -46,24 +48,30 @@ export async function POST(req: Request) {
     response_mime_type: 'text/plain',
   };
 
-  const model = genAI.getGenerativeModel({ model: modelName, generationConfig,safetySettings });
+  const model = genAI.getGenerativeModel({ model: modelName, generationConfig, safetySettings });
 
   const systemMessage = `
 
   `;
-
+  
   const prompt = `${systemMessage} ${message}`;
 
   try {
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
-    const senderEmail = "chaudhari.chinmay39@gmail.com"
-    const receiverEmail = "chaudhari.chinmay12345@gmail.com"
-    const emailPassword = "gqxv erdg awwb iqgz"  
 
+    // If the response indicates a potential suicide message, send an email alert to all family members
     if (!responseText.toLowerCase().includes('non-suicide')) {
-        await sendEmailAlert(senderEmail, receiverEmail, emailPassword, message);
+      // Fetch family member emails based on the userId
+      const familyMember = await FamilyMemberModel.findOne({ userId });
+
+      if (familyMember && familyMember.familyEmails.length > 0) {
+        // Send email alert to all family emails
+        await sendEmailAlert(familyMember.familyEmails, message);
+      } else {
+        console.error('No family member emails found');
       }
+    }
 
     return NextResponse.json({ response: result.response.text() });
   } catch (error) {
@@ -72,24 +80,30 @@ export async function POST(req: Request) {
   }
 }
 
-// Function to send an email alert
-async function sendEmailAlert(sender: string, receiver: string, password: string, message: string) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: sender, pass: password },
-    });
-  
+// Function to send an email alert to all family emails
+async function sendEmailAlert(familyEmails: string[], message: string) {
+  const sender = "chaudhari.chinmay39@gmail.com"; // Replace with your sender email
+  const emailPassword = "gqxv erdg awwb iqgz";  // Replace with your email password
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: sender, pass: emailPassword },
+  });
+
+  // Loop through all family emails and send the alert
+  for (const receiver of familyEmails) {
     const mailOptions = {
       from: sender,
       to: receiver,
       subject: '⚠️ Suicide Alert Detected',
       text: `A potential suicide risk or depression message was detected:\n\n"${message}"\n\nPlease take necessary action.`,
     };
-  
+
     try {
       await transporter.sendMail(mailOptions);
-      console.log('Alert email sent successfully.');
+      console.log(`Alert email sent to: ${receiver}`);
     } catch (error) {
       console.error('Error sending email:', error);
     }
   }
+}

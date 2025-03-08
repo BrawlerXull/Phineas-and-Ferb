@@ -2,6 +2,8 @@
 
 import { Progress } from "@/components/ui/progress"
 
+import { jsPDF } from "jspdf";
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,14 +32,15 @@ type EventDetails = {
 }
 
 type SpeechFeedback = {
-  clarity: number
-  pace: number
-  content: number
-  confidence: number
-  overallScore: number
-  strengths: string[]
-  improvements: string[]
-}
+  clarity: number;
+  pace: number;
+  content: string;
+  confidence: number;
+  overallScore: number;
+  strengths: string[];
+  improvementSuggestions?: string[]; // Optional in case it is missing
+};
+
 
 export default function PublicSpeaking() {
   const [activeTab, setActiveTab] = useState("event")
@@ -159,6 +162,34 @@ export default function PublicSpeaking() {
       setIsGenerating(false);
     }
   };
+
+
+  const saveSpeechAsPDF = () => {
+    if (!generatedSpeech) {
+      toast.warning("No speech content available to save.");
+      return;
+    }
+  
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Generated Speech", 20, 20);
+  
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+  
+    let y = 40; // Initial vertical position
+  
+    // Splitting the generated speech into lines and adding it to the PDF
+    const lines = doc.splitTextToSize(generatedSpeech, 170);
+    lines.forEach((line, index) => {
+      doc.text(line, 20, y + index * 8);
+    });
+  
+    doc.save("generated_speech.pdf");
+    toast.success("Generated speech saved as PDF!");
+  };
+  
   
 
 
@@ -372,18 +403,10 @@ export default function PublicSpeaking() {
               </CardContent>
               <CardFooter>
                 <div className="flex space-x-2 w-full">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    disabled={!generatedSpeech}
-                    onClick={() => {
-                      toast( "Your speech draft has been saved.",
-                      )
-                    }}
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Draft
-                  </Button>
+                <Button variant="outline" className="w-full" disabled={!generatedSpeech}  onClick={saveSpeechAsPDF}>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save as PDF
+                </Button>
                   <Button className="w-full" disabled={!generatedSpeech} onClick={() => setActiveTab("practice")}>
                     Practice Now
                   </Button>

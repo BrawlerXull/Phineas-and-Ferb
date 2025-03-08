@@ -1,3 +1,4 @@
+import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 
 type Message = {
@@ -11,6 +12,7 @@ const useChat = (initialMessages: Message[] = []) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suicideRisk, setSuicideRisk] = useState<string | null>(null);
+  const {user} = useUser();
 
   const handleSend = async () => {
     if (input.trim() === '') return;
@@ -40,8 +42,12 @@ const useChat = (initialMessages: Message[] = []) => {
       const suicideResponse = await fetch(`/api/chat/suicide`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ 
+          message: input, // The message the user inputs
+          userId: user?.id, // Make sure to include the userId from your app (e.g., from the authenticated user)
+        }),
       });
+      
 
       if (suicideResponse.ok) {
         const suicideData = await suicideResponse.json();

@@ -155,9 +155,9 @@ export default function Challenges() {
   
 
 
-
   const completeChallenge = async (challenge: Challenge) => {
     if (!user) return;
+
   
     try {
       const response = await fetch('/api/challenges/complete', {
@@ -165,6 +165,7 @@ export default function Challenges() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
+          name: user.fullName,
           challengeId: challenge.id,
           xpReward: challenge.reward,
           badge: challenge.completed ? null : challenge.name, // Assign badge when completing

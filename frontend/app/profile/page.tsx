@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useUser } from "@clerk/nextjs"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 type UserProfile = {
   name: string
@@ -29,13 +31,47 @@ type MeditationData = {
   duration: number
 }
 
-
 export default function Profile() {
   const { user } = useUser()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [checkIns, setCheckIns] = useState<CheckInData[]>([])
   const [meditationHistory, setMeditationHistory] = useState<MeditationData[]>([])
   const [loading, setLoading] = useState(true)
+
+  // State for family emails
+  const [familyEmails, setFamilyEmails] = useState<string[]>([])
+  const [newFamilyEmail, setNewFamilyEmail] = useState("")
+
+  const handleAddFamilyEmail = async () => {
+    if (newFamilyEmail) {
+      try {
+        // Ensure the user is authenticated
+        if (!user?.id) {
+          console.error('User is not authenticated.')
+          return
+        }
+
+        // Send the family email and userId to the backend
+        const res = await fetch('/api/family-members', {
+          method: 'POST',
+          body: JSON.stringify({ userId: user.id, email: newFamilyEmail }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        const data = await res.json()
+        if (res.ok) {
+          setFamilyEmails([...familyEmails, newFamilyEmail]) // Update the local state with the new email
+          setNewFamilyEmail('') // Clear the input field
+        } else {
+          console.error('Error saving email:', data.error)
+        }
+      } catch (error) {
+        console.error('Error saving family email:', error)
+      }
+    }
+  }
 
   useEffect(() => {
     if (!user) return
@@ -88,6 +124,10 @@ export default function Profile() {
     fetchCheckIns()
     fetchMeditationHistory()
   }, [user])
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFamilyEmail(e.target.value)
+  }
 
   if (loading) return <p>Loading...</p>
   if (!profile) return <p>Error loading profile</p>
@@ -175,36 +215,61 @@ export default function Profile() {
       </Card>
 
       {/* Meditation History */}
-<Card>
-  <CardHeader>
-    <CardTitle>Meditation History</CardTitle>
-  </CardHeader>
-  <CardContent>
-    {meditationHistory.length > 0 ? (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Start Time</TableHead>
-            <TableHead>Duration</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {meditationHistory.map((log, index) => (
-            <TableRow key={index}>
-              <TableCell>{new Date(log.date).toLocaleDateString()}</TableCell>
-              <TableCell>{new Date(log.startTime).toLocaleTimeString()}</TableCell>
-              <TableCell>{Math.floor(log.duration / 60)} min {log.duration % 60} sec</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    ) : (
-      <p className="text-muted-foreground">No meditation history available.</p>
-    )}
-  </CardContent>
-</Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Meditation History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {meditationHistory.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Start Time</TableHead>
+                  <TableHead>Duration</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {meditationHistory.map((log, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{new Date(log.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(log.startTime).toLocaleTimeString()}</TableCell>
+                    <TableCell>{Math.floor(log.duration / 60)} min {log.duration % 60} sec</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-muted-foreground">No meditation history available.</p>
+          )}
+        </CardContent>
+      </Card>
 
+      {/* Family Email Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Family Members</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div>
+              <Input
+                type="email"
+                placeholder="Enter family member's email"
+                value={newFamilyEmail}
+                onChange={handleEmailChange}
+                className="input"
+              />
+              <Button
+                onClick={handleAddFamilyEmail}
+                className="btn mt-2"
+              >
+                Add Family Member
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
