@@ -1,0 +1,248 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "name": "CheckIn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "penaltyAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PenaltyDeducted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "name": "Withdrawn",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_steps",
+        "type": "uint256"
+      }
+    ],
+    "name": "addRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "checkIn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "getUser",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "stakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "habitStartTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastCheckInTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adherenceCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "hasStaked",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "userAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "numberOfSteps",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct MeditationStaking.User",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "register",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "users",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "habitStartTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastCheckInTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "adherenceCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasStaked",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numberOfSteps",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
