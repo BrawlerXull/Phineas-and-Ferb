@@ -55,12 +55,12 @@ export default function RootLayout({
                         {/* <Link href="/input" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
                           Check-In
                         </Link> */}
-                        <Link href="/journal" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
+                         <Link href="/journal" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/input') ? 'border-b-2 border-primary' : ''}`}>
                           Journal
                         </Link>
                         <Link href="/chatbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chatbot') ? 'border-b-2 border-primary' : ''}`}>
                           AI Chat
-                        </Link>
+                        </Link> 
                         <Link href="/chainbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chainbot') ? 'border-b-2 border-primary' : ''}`}>
                           Chainbot
                         </Link>

@@ -39,3 +39,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to complete challenge' }, { status: 500 });
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+
+    const userStats = await UserStats.findOne({ userId });
+
+    if (!userStats) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ xp: userStats.xp, level: userStats.level, badges: userStats.badges }, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    return NextResponse.json({ error: 'Failed to fetch user stats' }, { status: 500 });
+  }
+}
