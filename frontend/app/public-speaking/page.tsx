@@ -14,9 +14,9 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { CalendarIcon, Mic, MicOff, Play, Pause, RotateCcw, Save, Loader2 } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
 
 type EventDetails = {
   title: string
@@ -59,55 +59,50 @@ export default function PublicSpeaking() {
   const [transcribedText, setTranscribedText] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [speechFeedback, setSpeechFeedback] = useState<SpeechFeedback | null>(null)
-  const { toast } = useToast()
+
 
   const handleInputChange = (field: keyof EventDetails, value: any) => {
     setEventDetails((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleGenerateSpeech = () => {
+  const handleGenerateSpeech = async () => {
     // Validate required fields
     if (!eventDetails.title || !eventDetails.topic || !eventDetails.audience) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in the event title, topic, and audience type.",
-        variant: "destructive",
-      })
-      return
+      toast.warning("Please fill in the event title, topic, and audience type.");
+      return;
     }
-
-    setIsGenerating(true)
-
-    // Simulate API call to generate speech
-    setTimeout(() => {
-      const mockSpeech = `
-# ${eventDetails.title}
-
-## Introduction
-Good ${eventDetails.date ? (new Date(eventDetails.date).getHours() < 12 ? "morning" : "afternoon") : "evening"}, everyone. My name is ${eventDetails.speakerName || "your speaker"}, and I'm delighted to be speaking with you today about ${eventDetails.topic}.
-
-## Main Points
-1. The importance of ${eventDetails.topic} in our daily lives
-2. Recent developments in this field
-3. How we can apply these insights to improve our well-being
-
-## Key Insights
-When we consider ${eventDetails.topic}, we must acknowledge its profound impact on mental health. Studies have shown that regular practice can reduce stress by up to 40% and improve overall well-being.
-
-## Personal Experience
-In my own journey, I've found that dedicating just 10 minutes a day to this practice has transformed my approach to challenges and improved my resilience.
-
-## Conclusion
-Thank you for your attention today. I hope you'll take these ideas and implement them in your own lives. I'm happy to answer any questions you might have.
-      `
-      setGeneratedSpeech(mockSpeech)
-      setIsGenerating(false)
-      toast({
-        title: "Speech Generated",
-        description: "Your speech draft has been created successfully.",
-      })
-    }, 2000)
-  }
+  
+    setIsGenerating(true);
+  
+    try {
+      const response = await fetch("/api/public-speaking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventDetails),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to generate speech. Please try again.");
+      }
+  
+      const data = await response.json();
+  
+      if (data.speech) {
+        setGeneratedSpeech(data.speech);
+        toast.success("Your speech draft has been created successfully.");
+      } else {
+        throw new Error("Speech generation failed.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.message || "Something went wrong.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+  
 
   const startRecording = () => {
     setIsRecording(true)
@@ -116,10 +111,8 @@ Thank you for your attention today. I hope you'll take these ideas and implement
       setRecordingTime((prev) => prev + 1)
     }, 1000)
     setRecordingInterval(interval)
-    toast({
-      title: "Recording Started",
-      description: "Your speech is now being recorded.",
-    })
+    toast("Your speech is now being recorded.",
+    )
   }
 
   const stopRecording = () => {
@@ -127,10 +120,8 @@ Thank you for your attention today. I hope you'll take these ideas and implement
     if (recordingInterval) {
       clearInterval(recordingInterval)
     }
-    toast({
-      title: "Recording Stopped",
-      description: `Recording saved (${formatTime(recordingTime)}).`,
-    })
+    toast(
+`Recording saved (${formatTime(recordingTime)}).`)
 
     // Simulate transcription
     setTranscribedText(
@@ -150,11 +141,9 @@ Thank you for your attention today. I hope you'll take these ideas and implement
 
   const analyzeSpeech = () => {
     if (!transcribedText) {
-      toast({
-        title: "No speech to analyze",
-        description: "Please record your speech first.",
-        variant: "destructive",
-      })
+      toast( "Please record your speech first.",
+
+      )
       return
     }
 
@@ -181,10 +170,9 @@ Thank you for your attention today. I hope you'll take these ideas and implement
       }
       setSpeechFeedback(mockFeedback)
       setIsAnalyzing(false)
-      toast({
-        title: "Analysis Complete",
-        description: "Your speech has been analyzed.",
-      })
+      toast(
+ "Your speech has been analyzed.",
+      )
     }, 2000)
   }
 
@@ -286,6 +274,7 @@ Thank you for your attention today. I hope you'll take these ideas and implement
                       <SelectValue placeholder="Select speech duration" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="1min">1 minutes</SelectItem>
                       <SelectItem value="5min">5 minutes</SelectItem>
                       <SelectItem value="10min">10 minutes</SelectItem>
                       <SelectItem value="15min">15 minutes</SelectItem>
@@ -367,10 +356,8 @@ Thank you for your attention today. I hope you'll take these ideas and implement
                     className="w-full"
                     disabled={!generatedSpeech}
                     onClick={() => {
-                      toast({
-                        title: "Speech Saved",
-                        description: "Your speech draft has been saved.",
-                      })
+                      toast( "Your speech draft has been saved.",
+                      )
                     }}
                   >
                     <Save className="mr-2 h-4 w-4" />
