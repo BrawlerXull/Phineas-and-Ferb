@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { toast } from 'sonner';
 
 const emojis = ['🌸', '🌺', '🌻', '🌼', '🌷', '🌹', '🍀', '🍁'];
 
 const useMemoryGame = () => {
+  const { user } = useUser();
   const [cards, setCards] = useState<string[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [solved, setSolved] = useState<number[]>([]);
@@ -32,6 +35,11 @@ const useMemoryGame = () => {
       if (cards[firstIndex] === cards[secondIndex]) {
         setSolved((prev) => [...prev, firstIndex, secondIndex]);
         setFlipped([]);
+
+        // Check if user has won
+        if ([...solved, firstIndex, secondIndex].length === cards.length) {
+          handleWin();
+        }
       } else {
         setDisabled(true);
         setTimeout(() => {
@@ -39,6 +47,33 @@ const useMemoryGame = () => {
           setDisabled(false);
         }, 1000);
       }
+    }
+  };
+
+  const handleWin = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated.');
+      return;
+    }
+
+    toast.success('You won the game! 🎉');
+
+    try {
+      const response = await fetch('/api/mini-games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }), // Sending userId from frontend
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update XP');
+      }
+
+      const data = await response.json();
+      toast.success(`XP increased! You are now level ${data.level}.`);
+    } catch (error) {
+      console.error('Error updating XP:', error);
+      toast.error('Could not update XP.');
     }
   };
 
