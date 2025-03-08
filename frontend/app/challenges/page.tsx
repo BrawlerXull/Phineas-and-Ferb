@@ -44,12 +44,14 @@ export default function Challenges() {
   const { user } = useUser()
   const [dailyChallenges, setDailyChallenges] = useState<Challenge[]>([])
   const [weeklyChallenges, setWeeklyChallenges] = useState<Challenge[]>([])
+  const [meditationChallenges, setMeditationChallenges] = useState<Challenge[]>([]);
 
   const [rewards] = useState<Reward[]>(mockRewards)
 
   useEffect(() => {
     if (user) {
       fetchChallenges(user.id)
+      fetchMeditationData(user.id);
     }
   }, [user])
 
@@ -73,6 +75,86 @@ export default function Challenges() {
       console.error("Error fetching check-ins:", error)
     }
   }
+
+  const updateMeditationChallenges = (meditationDays: Date[]) => {
+    const today = new Date();
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+
+    const meditatedToday = meditationDays.some((date) => isSameDay(date, today));
+    const weeklyMeditationCount = meditationDays.filter((date) => date >= weekStart).length;
+
+    setMeditationChallenges([
+      {
+        id: 7,
+        name: "Daily Meditation",
+        description: "Meditate at least once today",
+        difficulty: "Easy",
+        reward: 50,
+        progress: meditatedToday ? 1 : 0,
+        total: 1,
+        completed: meditatedToday,
+      },
+      {
+        id: 8,
+        name: "Weekly Meditation Streak",
+        description: "Meditate 5 times this week",
+        difficulty: "Medium",
+        reward: 150,
+        progress: weeklyMeditationCount,
+        total: 5,
+        completed: weeklyMeditationCount >= 5,
+      },
+    ]);
+  };
+
+  const fetchMeditationData = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/meditate?userId=${userId}`);
+      const data = await res.json();
+  
+      if (!res.ok) throw new Error(data.error || "Failed to fetch meditation data");
+  
+      const meditationDays = data.meditationDays.map((log: { date: string }) => new Date(log.date));
+      
+      const today = new Date();
+      const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+      const meditatedToday = meditationDays.some((date) => isSameDay(date, today));
+      const weeklyMeditationCount = meditationDays.filter((date) => date >= weekStart).length;
+  
+      const dailyMeditationChallenge: Challenge = {
+        id: 7,
+        name: "Daily Meditation",
+        description: "Meditate at least once today",
+        difficulty: "Easy",
+        reward: 50,
+        progress: meditatedToday ? 1 : 0,
+        total: 1,
+        completed: meditatedToday,
+      };
+  
+      const weeklyMeditationChallenge: Challenge = {
+        id: 8,
+        name: "Weekly Meditation Streak",
+        description: "Meditate 5 times this week",
+        difficulty: "Medium",
+        reward: 150,
+        progress: weeklyMeditationCount,
+        total: 5,
+        completed: weeklyMeditationCount >= 5,
+      };
+  
+      // Append daily meditation challenge to dailyChallenges
+      setDailyChallenges((prev) => [...prev, dailyMeditationChallenge]);
+  
+      // Append weekly meditation challenge to weeklyChallenges
+      setWeeklyChallenges((prev) => [...prev, weeklyMeditationChallenge]);
+    } catch (error) {
+      console.error("Error fetching meditation data:", error);
+    }
+  };
+  
+
+
 
   const completeChallenge = async (challenge: Challenge) => {
     if (!user) return;
@@ -215,9 +297,10 @@ export default function Challenges() {
         <p className="text-sm font-medium mt-2">Reward: {challenge.reward} XP</p>
       </CardContent>
       <CardFooter>
-        <Button onClick={() => completeChallenge(challenge)} disabled={challenge.completed}>
-            {challenge.completed ? "Completed" : "Complete Challenge"}
+        <Button onClick={() => completeChallenge(challenge)} disabled={!challenge.completed}>
+            {challenge.progress == challenge.total ? "Claim" : "Complete Challenge"}
         </Button>
+        
        </CardFooter>
     </Card>
   )
