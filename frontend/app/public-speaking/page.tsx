@@ -59,6 +59,63 @@ export default function PublicSpeaking() {
   const [transcribedText, setTranscribedText] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [speechFeedback, setSpeechFeedback] = useState<SpeechFeedback | null>(null)
+  const [isListening, setIsListening] = useState(false);
+
+  let recognition: SpeechRecognition | null = null;
+  if (typeof window !== "undefined") {
+    recognition = new ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)();
+  }
+
+  if (recognition) {
+    recognition.continuous = true;
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join(" ");
+      setTranscribedText(transcript);
+    };
+  }
+
+  const startRecording = () => {
+    setIsRecording(true);
+    setRecordingTime(0);
+    setTranscribedText("");
+    if (recognition) recognition.start();
+
+    const interval = setInterval(() => {
+      setRecordingTime((prev) => prev + 1);
+    }, 1000);
+    setRecordingInterval(interval);
+    toast("Your speech is now being recorded.");
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    if (recordingInterval) clearInterval(recordingInterval);
+    if (recognition) recognition.stop();
+    toast(`Recording saved (${formatTime(recordingTime)}).`);
+  };
+
+  const resetRecording = () => {
+    setIsRecording(false);
+    setRecordingTime(0);
+    if (recordingInterval) clearInterval(recordingInterval);
+    setTranscribedText("");
+    setSpeechFeedback(null);
+  };
+
+ 
 
 
   const handleInputChange = (field: keyof EventDetails, value: any) => {
@@ -104,77 +161,41 @@ export default function PublicSpeaking() {
   };
   
 
-  const startRecording = () => {
-    setIsRecording(true)
-    setRecordingTime(0)
-    const interval = setInterval(() => {
-      setRecordingTime((prev) => prev + 1)
-    }, 1000)
-    setRecordingInterval(interval)
-    toast("Your speech is now being recorded.",
-    )
-  }
 
-  const stopRecording = () => {
-    setIsRecording(false)
-    if (recordingInterval) {
-      clearInterval(recordingInterval)
-    }
-    toast(
-`Recording saved (${formatTime(recordingTime)}).`)
+ 
 
-    // Simulate transcription
-    setTranscribedText(
-      "Thank you everyone for joining me today. I'm excited to talk about mindfulness meditation and its benefits for mental health. Studies have shown that regular meditation practice can significantly reduce stress and anxiety levels. In my own experience, I've found that even just 10 minutes of daily meditation has made a remarkable difference in how I handle challenging situations. I encourage all of you to try incorporating this simple practice into your daily routine.",
-    )
-  }
-
-  const resetRecording = () => {
-    setIsRecording(false)
-    setRecordingTime(0)
-    if (recordingInterval) {
-      clearInterval(recordingInterval)
-    }
-    setTranscribedText("")
-    setSpeechFeedback(null)
-  }
-
-  const analyzeSpeech = () => {
+  const analyzeSpeech = async () => {
     if (!transcribedText) {
-      toast( "Please record your speech first.",
-
-      )
-      return
+      toast("Please record your speech first.");
+      return;
     }
-
-    setIsAnalyzing(true)
-
-    // Simulate API call to analyze speech
-    setTimeout(() => {
-      const mockFeedback: SpeechFeedback = {
-        clarity: 85,
-        pace: 78,
-        content: 92,
-        confidence: 80,
-        overallScore: 84,
-        strengths: [
-          "Clear explanation of the topic",
-          "Good use of personal experience",
-          "Effective conclusion with a call to action",
-        ],
-        improvements: [
-          "Consider varying your pace more for emphasis",
-          "Add more specific examples to support your points",
-          "Practice more confident delivery with fewer hesitations",
-        ],
+  
+    setIsAnalyzing(true);
+  
+    try {
+      const response = await fetch("/api/public-speaking/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ transcribedText }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to analyze speech.");
       }
-      setSpeechFeedback(mockFeedback)
-      setIsAnalyzing(false)
-      toast(
- "Your speech has been analyzed.",
-      )
-    }, 2000)
-  }
+  
+      const feedback: SpeechFeedback = await response.json();
+      setSpeechFeedback(feedback);
+      toast("Your speech has been analyzed successfully.");
+    } catch (error) {
+      console.error("Error analyzing speech:", error);
+      toast.error("Failed to analyze speech. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -371,6 +392,7 @@ export default function PublicSpeaking() {
             </Card>
           </div>
         </TabsContent>
+
         <TabsContent value="practice">
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
