@@ -29,12 +29,12 @@ const UserSearch = ({ users, groups, onAddToGroup }) => {
             <span className="text-lg font-medium text-gray-800">
               {user.userName}
             </span>
-            <button
+            {/* <button
               onClick={(e) => handleMenuClick(e, user)}
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 mb-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-white text-blue-600 hover:bg-white/90 h-9 rounded-md px-3 border-blue-600 border"
             >
               Add to Group
-            </button>
+            </button> */}
             <Menu
               anchorEl={anchorEl}
               open={Boolean(selectedUser && selectedUser.id === user.id)}

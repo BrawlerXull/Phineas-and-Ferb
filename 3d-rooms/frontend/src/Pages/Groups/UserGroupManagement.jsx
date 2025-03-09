@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Input } from "@mui/material";
+import { Button, Input, Typography, Box, Grid, Card, CardContent } from "@mui/material";
 import axios from "axios";
 import UserSearch from "./UserSearch";
 import GroupList from "./GroupList";
@@ -17,7 +17,7 @@ const UserGroupManagement = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/v1/user/viewAllUsers",{headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}}
+        "http://localhost:4000/api/v1/user/viewAllUsers", { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
 
       if (response.data && response.data.users) {
@@ -38,7 +38,6 @@ const UserGroupManagement = () => {
     try {
       setLoading(true);
 
-      // Retrieve user ID from localStorage
       const userId = localStorage.getItem("currentUser");
 
       if (!userId) {
@@ -49,7 +48,7 @@ const UserGroupManagement = () => {
 
       const response = await axios.post(
         "http://localhost:4000/api/v1/user/viewUserGroups",
-        { userId },{headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}}
+        { userId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
 
       if (response.data && response.data.groups) {
@@ -84,7 +83,6 @@ const UserGroupManagement = () => {
         }
       );
 
-      // Update the group members in the state if the user is successfully added
       setGroups((prevGroups) =>
         prevGroups.map((group) =>
           group._id === groupId
@@ -95,19 +93,10 @@ const UserGroupManagement = () => {
 
       alert(response.data.message);
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error adding user to group:", error);
-      }
+      console.error("Error adding user to group:", error);
     }
   };
 
-  // Handle removing user from group
   const removeUserFromGroup = async (userId, groupId) => {
     try {
       const response = await axios.post(
@@ -118,7 +107,6 @@ const UserGroupManagement = () => {
         }
       );
 
-      // Update the group members in the state after successful removal
       setGroups((prevGroups) =>
         prevGroups.map((group) =>
           group._id === groupId
@@ -129,15 +117,7 @@ const UserGroupManagement = () => {
 
       alert(response.data.message);
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error removing user from group:", error);
-      }
+      console.error("Error removing user from group:", error);
     }
   };
 
@@ -154,90 +134,84 @@ const UserGroupManagement = () => {
         }
       );
 
-      // Update the frontend state if the group is successfully deleted
       setGroups((prevGroups) =>
         prevGroups.filter((group) => group._id !== groupId)
       );
 
       alert(response.data.message);
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error deleting group:", error);
-      }
+      console.error("Error deleting group:", error);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 px-10 font-sans">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold mb-6">User Group Management</h1>
-        <a
-          href="/group/global"
-          className="mb-4 py-[13px] bg-green-500 px-3 rounded-md text-white font-semibold"
-          variant="contained"
-        >
-          Back
-        </a>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Search Users</h2>
-          <Input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            fullWidth
-            className="border border-gray-200 mb-5 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <div
-            style={{
-              maxHeight: "450px",
-              overflowY: "auto",
-              paddingRight: "10px",
-            }}
-            className="bg-white border border-gray-300 rounded-lg p-4"
-          >
-            <UserSearch
-              users={filteredUsers}
-              groups={groups}
-              onAddToGroup={addUserToGroup}
-            />
-          </div>
-        </div>
-        <div className="">
-          <h2 className="text-xl font-semibold mb-2">Groups</h2>
-          <button
-            onClick={() => setShowCreateGroupModal(true)}
-            className="mb-4 py-[13px] bg-blue-500 px-3 rounded-md text-white font-semibold"
+    <Box sx={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <Grid container spacing={4}>
+        {/* Header Section */}
+        <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" fontWeight="bold">User Group Management</Typography>
+          <Button
+            href="/group/global"
             variant="contained"
+            color="primary"
+            sx={{ borderRadius: "8px" }}
           >
-            CREATE NEW GROUP
-          </button>
-          <div
-            style={{
-              maxHeight: "450px",
-              overflowY: "auto",
-              paddingRight: "10px",
-            }}
-            className="bg-white border border-gray-300 rounded-lg p-4 mt-[5px]"
-          >
-            <GroupList
-              groups={groups}
-              users={users}
-              onRemoveUser={removeUserFromGroup}
-              onDeleteGroup={deleteGroup}
-            />
-          </div>
-        </div>
-      </div>
+            Back
+          </Button>
+        </Grid>
 
+        {/* Search Users Section */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ padding: "20px" }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>Search Users</Typography>
+            <Input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              fullWidth
+              sx={{
+                borderRadius: "8px",
+                padding: "10px",
+                marginBottom: "20px",
+                borderColor: "lightgray",
+              }}
+            />
+            <div style={{ maxHeight: "450px", overflowY: "auto" }}>
+              <UserSearch
+                users={filteredUsers}
+                groups={groups}
+                onAddToGroup={addUserToGroup}
+              />
+            </div>
+          </Card>
+        </Grid>
+
+        {/* Groups Section */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ padding: "20px" }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>Groups</Typography>
+            <Button
+              onClick={() => setShowCreateGroupModal(true)}
+              variant="contained"
+              color="secondary"
+              sx={{ borderRadius: "8px", marginBottom: "20px" }}
+            >
+              Create New Group
+            </Button>
+            <div style={{ maxHeight: "450px", overflowY: "auto" }}>
+              <GroupList
+                groups={groups}
+                users={users}
+                onRemoveUser={removeUserFromGroup}
+                onDeleteGroup={deleteGroup}
+              />
+            </div>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Create Group Modal */}
       {showCreateGroupModal && (
         <CreateGroupModal
           users={users}
@@ -245,7 +219,7 @@ const UserGroupManagement = () => {
           onGroupCreated={createGroup}
         />
       )}
-    </div>
+    </Box>
   );
 };
 

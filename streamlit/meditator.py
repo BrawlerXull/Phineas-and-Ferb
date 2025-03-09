@@ -112,6 +112,7 @@ while True:
     # Detect faces
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
+    # Inside the while loop, after detecting eyes
     if len(faces) > 0:
         for (x, y, w, h) in faces:
             # Draw a rectangle around the face
@@ -127,8 +128,18 @@ while True:
             # If no eyes are detected, label as "Eyes Closed"
             if len(eyes) == 0:
                 cv2.putText(img, 'Eyes Closed', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                
+                # Clear the warning if eyes are closed
+                if st.session_state.get("warning_shown", False):
+                    st.session_state.warning_placeholder.empty()
+                    st.session_state.warning_shown = False
             else:
                 cv2.putText(img, 'Eyes Open', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                
+                # Only show the warning if it hasn't been shown already
+                if not st.session_state.get("warning_shown", False):
+                    st.session_state.warning_placeholder = st.warning("Please close your eyes to begin the meditation.")
+                    st.session_state.warning_shown = True
 
             # Optionally, draw rectangles around detected eyes
             for (ex, ey, ew, eh) in eyes:
@@ -139,6 +150,7 @@ while True:
 
     # Display the image in the Streamlit app
     video_feed.image(img_rgb, channels="RGB", use_container_width=True)
+
 
 
     # Break the loop if 'q' is pressed
