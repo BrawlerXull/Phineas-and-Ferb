@@ -1,5 +1,6 @@
 'use client'
 
+import { NeonGradientCard } from "@/components/neon-gradient-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -14,6 +15,7 @@ export default function Chainbot() {
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
+      <NeonGradientCard>
       <CardHeader>
         <CardTitle>Chainbot</CardTitle>
         <CardDescription>Chat with Chainbot to manage your blockchain transactions and interactions.</CardDescription>
@@ -53,6 +55,7 @@ export default function Chainbot() {
           <Button type="submit" disabled={loading}>Send</Button>
         </form>
       </CardFooter>
+      </NeonGradientCard>
     </Card>
   );
 }

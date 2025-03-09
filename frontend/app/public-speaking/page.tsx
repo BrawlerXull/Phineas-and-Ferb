@@ -19,6 +19,7 @@ import { CalendarIcon, Mic, MicOff, Play, Pause, RotateCcw, Save, Loader2 } from
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { NeonGradientCard } from "@/components/neon-gradient-card";
 
 type EventDetails = {
   title: string
@@ -238,12 +239,13 @@ export default function PublicSpeaking() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Public Speaking Practice</h1>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 mb-10">
           <TabsTrigger value="event">Event Management</TabsTrigger>
           <TabsTrigger value="practice">Speaking Practice</TabsTrigger>
         </TabsList>
         <TabsContent value="event">
           <div className="grid gap-6 md:grid-cols-2">
+            <NeonGradientCard>
             <Card>
               <CardHeader>
                 <CardTitle>Event Details</CardTitle>
@@ -359,6 +361,8 @@ export default function PublicSpeaking() {
                 </Button>
               </CardFooter>
             </Card>
+            </NeonGradientCard>
+            <NeonGradientCard>
             <Card>
               <CardHeader>
                 <CardTitle>Generated Speech</CardTitle>
@@ -413,11 +417,13 @@ export default function PublicSpeaking() {
                 </div>
               </CardFooter>
             </Card>
+            </NeonGradientCard>
           </div>
         </TabsContent>
 
         <TabsContent value="practice">
           <div className="grid gap-6 md:grid-cols-2">
+            <NeonGradientCard>
             <Card>
               <CardHeader>
                 <CardTitle>Speech Practice</CardTitle>
@@ -469,6 +475,8 @@ export default function PublicSpeaking() {
                 </Button>
               </CardFooter>
             </Card>
+            </NeonGradientCard>
+            <NeonGradientCard>
             <Card>
               <CardHeader>
                 <CardTitle>Speech Analysis</CardTitle>
@@ -548,6 +556,7 @@ export default function PublicSpeaking() {
                 )}
               </CardContent>
             </Card>
+            </NeonGradientCard>
           </div>
         </TabsContent>
       </Tabs>

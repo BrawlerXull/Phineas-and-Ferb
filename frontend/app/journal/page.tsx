@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "@/hooks/useForm";
 import { useMoodCalendar } from "@/hooks/useMoodCalendar";
+import { NeonGradientCard } from "@/components/neon-gradient-card";
 
 const moodColors: Record<string, string> = {
   happy: "bg-green-500",
@@ -62,11 +63,12 @@ export default function Journal() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Mood Journal</h1>
       <Tabs defaultValue="check-in">
-        <TabsList>
+        <TabsList className="mb-10">
           <TabsTrigger value="check-in">Daily Check-In</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
         </TabsList>
         <TabsContent value="check-in">
+          <NeonGradientCard>
           <Card className="">
             <CardHeader>
               <CardTitle>Daily Check-In</CardTitle>
@@ -133,9 +135,11 @@ export default function Journal() {
               </form>
             </CardContent>
           </Card>
+          </NeonGradientCard>
         </TabsContent>
         <TabsContent value="calendar">
-          <Card className="w-full max-w-2xl ">
+          <NeonGradientCard>
+          <Card className=" ">
             <CardHeader>
               <CardTitle>Mood Calendar</CardTitle>
               <CardDescription>Track your daily mood over time</CardDescription>
@@ -150,7 +154,7 @@ export default function Journal() {
                       setSelectedDate(date);
                     }
                   }}
-                  className="rounded-md border p-4"
+                  className="rounded-md  p-4"
                   components={{
                     DayContent: ({ date }) => {
                       const mood = getDayMood(date);
@@ -205,6 +209,7 @@ export default function Journal() {
               </div>
             </CardContent>
           </Card>
+          </NeonGradientCard>
         </TabsContent>
 
       </Tabs>

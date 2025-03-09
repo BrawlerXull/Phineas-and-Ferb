@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mic, MicOff } from "lucide-react"; 
 import useChat from "@/hooks/useChat";
+import { NeonGradientCard } from "@/components/neon-gradient-card";
 
 export default function Chatbot() {
   const { messages, input, setInput, loading, error, handleSend } = useChat([
@@ -54,7 +55,9 @@ export default function Chatbot() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    
+      <Card className="w-full max-w-2xl mx-auto">
+        <NeonGradientCard>
       <CardHeader>
         <CardTitle>MindAI Health Assistant</CardTitle>
         <CardDescription>Chat with our AI for support and guidance</CardDescription>
@@ -102,6 +105,7 @@ export default function Chatbot() {
           </Button>
         </form>
       </CardFooter>
+      </NeonGradientCard>
     </Card>
   );
 }

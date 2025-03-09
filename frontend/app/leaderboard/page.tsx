@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Medal, Award } from "lucide-react"
+import { NeonGradientCard } from "@/components/neon-gradient-card"
 
 type LeaderboardEntry = {
   userId: string
@@ -50,6 +51,7 @@ export default function Leaderboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Leaderboard</h1>
+      <NeonGradientCard>
       <Card>
         <CardHeader>
           <CardTitle>Top Players</CardTitle>
@@ -81,6 +83,7 @@ export default function Leaderboard() {
           )}
         </CardContent>
       </Card>
+      </NeonGradientCard>
     </div>
   )
 }

@@ -61,9 +61,9 @@ export default function RootLayout({
                         <Link href="/chatbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chatbot') ? 'border-b-2 border-primary' : ''}`}>
                           AI Chat
                         </Link> 
-                        {/* <Link href="/chainbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chainbot') ? 'border-b-2 border-primary' : ''}`}>
+                        <Link href="/chainbot" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/chainbot') ? 'border-b-2 border-primary' : ''}`}>
                           Chainbot
-                        </Link> */}
+                        </Link>
                         {/* <Link href="/calendar" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/calendar') ? 'border-b-2 border-primary' : ''}`}>
                           Calendar
                         </Link> */}
@@ -73,9 +73,9 @@ export default function RootLayout({
                         <Link href="/stake" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/stake') ? 'border-b-2 border-primary' : ''}`}>
                           Stake
                         </Link>
-                        {/* <Link href="/fitbit" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
+                        <Link href="/fitbit" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
                           Fitbit
-                        </Link> */}
+                        </Link>
                         <Link href="/leaderboard" className={`flex items-center text-sm font-medium text-muted-foreground hover:text-primary ${isActive('/fitbit') ? 'border-b-2 border-primary' : ''}`}>
                           Leaderboard
                         </Link>
