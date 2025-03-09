@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HangoutRoom from "./Pages/HangoutRoom";
 import LoginPage from "./Pages/Auth/Login";
 import RegisterPage from "./Pages/Auth/Register";
+import UserGroupManagement from "./Pages/Groups/UserGroupManagement";
 
 // PrivateRoute component
 const PrivateRoute = ({ children }) => {
@@ -16,7 +17,15 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
+        {/* Protecting routes */}
+        <Route
+          path="/mygroups"
+          element={
+            <PrivateRoute>
+              <UserGroupManagement />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/group/:groupId"
           element={

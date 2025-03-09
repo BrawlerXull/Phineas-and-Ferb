@@ -238,7 +238,11 @@ const HangoutRoom = () => {
     }
   };
 
-
+  const handleMyRooms = () => {
+    // socket.disconnect()
+    // socket.reconnect()
+    navigate("/mygroups")
+  };
 
   return (
     <div className="font-sans w-screen h-screen bg-black">
@@ -331,6 +335,15 @@ const HangoutRoom = () => {
             className="bg-red-500 text-white rounded-full p-4"
           >
             Logout
+          </button>
+        </div>
+        {/* "My Rooms" Button */}
+        <div className="flex fixed top-20 right-20 z-20">
+          <button
+            onClick={handleMyRooms}
+            className="bg-blue-500 text-white rounded-full p-4"
+          >
+            My Rooms
           </button>
         </div>
         <div className="fixed bottom-0 mb-4 mr-4 right-0 min-w-max flex">
