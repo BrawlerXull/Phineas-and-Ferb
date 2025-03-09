@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "@/hooks/useForm";
 import { useMoodCalendar } from "@/hooks/useMoodCalendar";
-import { NeonGradientCard } from "@/components/neon-gradient-card";
+
 
 const moodColors: Record<string, string> = {
   happy: "bg-green-500",
@@ -68,7 +68,7 @@ export default function Journal() {
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
         </TabsList>
         <TabsContent value="check-in">
-          <NeonGradientCard>
+
           <Card className="">
             <CardHeader>
               <CardTitle>Daily Check-In</CardTitle>
@@ -135,10 +135,10 @@ export default function Journal() {
               </form>
             </CardContent>
           </Card>
-          </NeonGradientCard>
+
         </TabsContent>
         <TabsContent value="calendar">
-          <NeonGradientCard>
+
           <Card className=" ">
             <CardHeader>
               <CardTitle>Mood Calendar</CardTitle>
@@ -209,7 +209,7 @@ export default function Journal() {
               </div>
             </CardContent>
           </Card>
-          </NeonGradientCard>
+
         </TabsContent>
 
       </Tabs>

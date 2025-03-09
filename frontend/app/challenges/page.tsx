@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser } from "@clerk/nextjs"
 import { startOfWeek, isSameDay } from "date-fns"
 import { Button } from "@/components/ui/button"
-import { NeonGradientCard } from "@/components/neon-gradient-card"
 
 type Challenge = {
   id: number
@@ -331,7 +330,6 @@ export default function Challenges() {
         </TabsList>
         
         <TabsContent value="badges">
-        <NeonGradientCard>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {rewards.map((reward) => (
               <Card key={reward.id}>
@@ -349,25 +347,20 @@ export default function Challenges() {
               </Card>
             ))}
           </div>
-          </NeonGradientCard>
         </TabsContent>
         <TabsContent value="daily">
-        <NeonGradientCard>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {dailyChallenges.map((challenge) => (
               <ChallengeCard key={challenge.id} challenge={challenge} />
             ))}
           </div>
-          </NeonGradientCard>
         </TabsContent>
         <TabsContent value="weekly">
-        <NeonGradientCard>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {weeklyChallenges.map((challenge) => (
               <ChallengeCard key={challenge.id} challenge={challenge} />
             ))}
           </div>
-          </NeonGradientCard>
         </TabsContent>
       </Tabs>
     </div>

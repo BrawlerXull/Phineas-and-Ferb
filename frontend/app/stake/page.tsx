@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import useMeditationStaking from '@/hooks/useMeditationStakingContract'
 import { toast } from 'sonner'
-import { NeonGradientCard } from '@/components/neon-gradient-card'
 
 const MINIMUM_STAKE = 0.1
 
@@ -76,7 +75,6 @@ export default function Stake() {
             {isLoading ? 'Processing...' : 'Cash Out'}
           </Button>
         </div>
-        <NeonGradientCard>
         <Card>
           <CardHeader>
             <CardTitle>Stake Your ETH</CardTitle>
@@ -110,7 +108,6 @@ export default function Stake() {
             </Button>
           </CardFooter>
         </Card>
-        </NeonGradientCard>
       </div>
     </div>
   )
