@@ -40,8 +40,8 @@ export const useFitbit = () => {
   const [lifeTimeSteps, setLifeTimeSteps] = useState(0);
   const { addRewards } = useMeditationStaking();
 
-  const FITBIT_CLIENT_ID = '23Q35R';
-  const REDIRECT_URI = 'https://eunoia-vault.vercel.app/fitbit';
+  const FITBIT_CLIENT_ID = '23Q5YZ';
+  const REDIRECT_URI = 'http://localhost:3000/fitbit';
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -83,7 +83,7 @@ export const useFitbit = () => {
   const fetchActivitySummary = async (accessToken: string) => {
     try {
       const response = await fetch(
-        'https://api.fitbit.com/1/user/-/activities/date/2024-12-21.json',
+        'https://api.fitbit.com/1/user/-/activities/date/2025-03-09.json',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

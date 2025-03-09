@@ -5,18 +5,77 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-
 import { useFitbit } from "@/hooks/useFitbit";
+import { Line } from "react-chartjs-2"; // Chart.js library
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
+// Register the components with Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const FitbitIntegration = () => {
-  const {connectFitbit , isLinked, activitySummary , handleClaimReward} = useFitbit()
+  const { connectFitbit, isLinked, activitySummary, handleClaimReward } = useFitbit();
 
   const calculateReward = (steps: number) => {
     return (steps / 1000) * 0.1;
   };
 
-  
+  // Prepare data for the charts
+  const stepsData = {
+    labels: ["Morning", "Afternoon", "Evening"], // Example data, adjust based on real data
+    datasets: [
+      {
+        label: "Steps",
+        data: [1000, 1500, 305], // Replace with real data from the API
+        borderColor: "#4CAF50", 
+        backgroundColor: "rgba(76, 175, 80, 0.2)",
+        fill: true,
+      },
+    ],
+  };
+
+  const caloriesData = {
+    labels: ["Morning", "Afternoon", "Evening"], // Example data, adjust based on real data
+    datasets: [
+      {
+        label: "Calories Burned",
+        data: [300, 200, 137], // Replace with real data from the API
+        borderColor: "#FF6347", 
+        backgroundColor: "rgba(255, 99, 71, 0.2)",
+        fill: true,
+      },
+    ],
+  };
+
+  const distanceData = {
+    labels: ["Morning", "Afternoon", "Evening"], // Example data, adjust based on real data
+    datasets: [
+      {
+        label: "Distance (km)",
+        data: [1, 0.5, 0.5], // Replace with real data from the API
+        borderColor: "#1E90FF", 
+        backgroundColor: "rgba(30, 144, 255, 0.2)",
+        fill: true,
+      },
+    ],
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between">
@@ -103,27 +162,38 @@ const FitbitIntegration = () => {
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Claim Reward Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Claim Your Reward</CardTitle>
-                  <CardDescription>Earn ETH based on your daily steps</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-lg font-semibold">
-                    You&apos;ve earned {calculateReward(activitySummary.summary.steps).toFixed(3)} ETH
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Based on {activitySummary.summary.steps} steps today
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button onClick={handleClaimReward}>Claim Reward</Button>
-                </CardFooter>
-              </Card>
             </CardContent>
           </Card>
+
+          {/* Charts */}
+          <div className="grid gap-6 lg:grid-cols-2 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Steps Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Line data={stepsData} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Calories Burned Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Line data={caloriesData} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Distance Covered Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Line data={distanceData} />
+              </CardContent>
+            </Card>
+          </div>
         </motion.div>
       )}
     </div>
